@@ -1,0 +1,58 @@
+name: Update SAI FANCY Products
+
+on:
+  push:
+    paths:
+      - "images/**"
+      - ".github/workflows/update-products.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-products:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate product file list
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os
+          import json
+
+          extensions = {".jpg", ".jpeg", ".png", ".webp"}
+          files = []
+
+          for category in ["black-metal", "rose-gold", "gold"]:
+              folder = os.path.join("images", category)
+
+              if os.path.isdir(folder):
+                  for name in sorted(os.listdir(folder)):
+                      if os.path.splitext(name)[1].lower() in extensions:
+                          files.append(f"images/{category}/{name}")
+
+          with open("product-files.js", "w", encoding="utf-8") as f:
+              f.write("window.SAI_FANCY_FILES = ")
+              json.dump(files, f)
+              f.write(";")
+
+          print("Products found:", len(files))
+          PY
+
+      - name: Commit generated product list
+        shell: bash
+        run: |
+          git config user.name "SAI FANCY Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add product-files.js
+
+          git diff --cached --quiet || git commit -m "Auto update products"
+
+          git push
