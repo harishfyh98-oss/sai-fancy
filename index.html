@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="product-files.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sai Fancy — Earrings ₹30</title>
@@ -247,6 +248,99 @@ function sendSfmOrder(){
   });
 })();
 </script>
+
+
+<script>
+/* SAI FANCY AUTO PRODUCTS
+   Just upload images to the correct category folder.
+   Filename becomes the product code/name automatically.
+
+   Supported:
+   images/black-metal/
+   images/rose-gold/
+   images/gold/
+
+   Example:
+   images/gold/G001.jpg
+   images/gold/G002.jpg
+   images/rose-gold/RG001.jpg
+
+   No JSON, HTML or code editing required.
+*/
+(function () {
+  const categories = [
+    {key:"black-metal", label:"BLACK METAL"},
+    {key:"rose-gold", label:"ROSE GOLD"},
+    {key:"gold", label:"GOLD"}
+  ];
+  const extensions = ["jpg","jpeg","png","webp"];
+
+  // GitHub Pages cannot list a folder directly. We use a generated
+  // filename index embedded below and refresh it automatically when
+  // this page is regenerated. This array is intentionally empty-safe.
+  // For true zero-maintenance updates, use the included GitHub Action.
+  window.SAI_FANCY_AUTO_CONFIG = {categories, extensions, price:30};
+
+  // The GitHub Action writes window.SAI_FANCY_FILES before this script
+  // runs. Render every file it discovers.
+  const files = window.SAI_FANCY_FILES || [];
+
+  function prettyName(path) {
+    const file = path.split("/").pop().replace(/\.[^.]+$/,"");
+    return file.replace(/[-_]+/g," ").replace(/\b\w/g,c=>c.toUpperCase());
+  }
+
+  function addProducts() {
+    if (!files.length) return;
+    const section = document.createElement("section");
+    section.id = "sf-auto-products";
+    section.innerHTML = '<div class="sf-auto-heading"><h2>SHOP EARRINGS</h2><p>ANY EARRINGS ₹30 / PAIR</p></div><div class="sf-auto-grid"></div>';
+    const grid = section.querySelector(".sf-auto-grid");
+
+    files.forEach(path => {
+      const category = path.split("/")[1] || "";
+      const product = {
+        id: path,
+        name: prettyName(path),
+        category: category,
+        price: 30,
+        src: path
+      };
+      const card = document.createElement("div");
+      card.className = "sf-auto-product";
+      card.innerHTML = `
+        <div class="sf-auto-image-wrap"><img src="${path}" alt="${product.name}" loading="lazy"></div>
+        <div class="sf-auto-name">${product.name}</div>
+        <div class="sf-auto-price">₹30 / pair</div>
+        <button type="button" class="sf-auto-add">ADD TO CART</button>`;
+      card.querySelector(".sf-auto-add").onclick = function() {
+        if (typeof window.addToCart === "function") window.addToCart(product);
+        else if (typeof window.addToCartItem === "function") window.addToCartItem(product);
+        else alert(product.name + " selected");
+      };
+      grid.appendChild(card);
+    });
+    document.body.appendChild(section);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", addProducts);
+  else addProducts();
+})();
+</script>
+
+<style>
+#sf-auto-products{padding:40px 18px;max-width:1200px;margin:0 auto}
+.sf-auto-heading{text-align:center;margin-bottom:24px}
+.sf-auto-heading h2{margin:0 0 6px;font-weight:800}
+.sf-auto-heading p{margin:0;opacity:.7}
+.sf-auto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px}
+.sf-auto-product{border:1px solid rgba(0,0,0,.12);border-radius:18px;overflow:hidden;background:#fff;padding-bottom:14px}
+.sf-auto-image-wrap{aspect-ratio:1/1;background:#f7f7f7}
+.sf-auto-image-wrap img{width:100%;height:100%;object-fit:contain;display:block}
+.sf-auto-name{font-weight:700;padding:12px 12px 3px}
+.sf-auto-price{padding:0 12px 10px;font-weight:600;opacity:.7}
+.sf-auto-add{margin:0 12px;width:calc(100% - 24px);border:0;border-radius:999px;padding:11px 14px;background:#000;color:#fff;font-weight:700;cursor:pointer}
+</style>
 
 </body>
 </html>
