@@ -45,14 +45,19 @@ const CATEGORIES=[
  {key:'gold',label:'GOLD',tag:'classic · glam'}
 ];
 const SLOT_COUNT=30;
-const availableFiles=window.SAI_FANCY_FILES||[];
-function previewFor(cat){
-  const own=availableFiles.find(p=>p.startsWith(`images/${cat}/`)&&!/-SOLD\.(jpg|jpeg|png|webp)$/i.test(p));
+const availableFiles=(window.SAI_FANCY_FILES||[]).filter(p=>!/-SOLD\.(jpg|jpeg|png|webp)$/i.test(p));
+function previewFor(cat, fallbackIndex){
+  const own=availableFiles.find(p=>p.startsWith(`images/${cat}/`));
   if(own) return own;
-  const any=availableFiles.find(p=>!/-SOLD\.(jpg|jpeg|png|webp)$/i.test(p));
-  return any || 'images/gold/ear-002.jpg';
+  // If a category has no products yet, use a different available
+  // product for each style card instead of repeating the same image.
+  return availableFiles[fallbackIndex] || availableFiles[0] || 'images/gold/ear-002.jpg';
 }
-const categoryPreview=Object.fromEntries(CATEGORIES.map(c=>[c.key,previewFor(c.key)]));
+const categoryPreview={
+  "black-metal": previewFor("black-metal", 0),
+  "rose-gold": previewFor("rose-gold", 1),
+  "gold": previewFor("gold", 2)
+};
 let current='All', cart=[], liked=new Set(JSON.parse(localStorage.getItem('sfm-liked')||'[]'));
 
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
