@@ -45,7 +45,14 @@ const CATEGORIES=[
  {key:'gold',label:'GOLD',tag:'classic · glam'}
 ];
 const SLOT_COUNT=30;
-const categoryPreview={"black-metal":"images/gold/ear-004.jpg","rose-gold":"images/gold/ear-003.jpg","gold":"images/gold/ear-001.jpg"};
+const availableFiles=window.SAI_FANCY_FILES||[];
+function previewFor(cat){
+  const own=availableFiles.find(p=>p.startsWith(`images/${cat}/`)&&!/-SOLD\.(jpg|jpeg|png|webp)$/i.test(p));
+  if(own) return own;
+  const any=availableFiles.find(p=>!/-SOLD\.(jpg|jpeg|png|webp)$/i.test(p));
+  return any || 'images/gold/ear-002.jpg';
+}
+const categoryPreview=Object.fromEntries(CATEGORIES.map(c=>[c.key,previewFor(c.key)]));
 let current='All', cart=[], liked=new Set(JSON.parse(localStorage.getItem('sfm-liked')||'[]'));
 
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
