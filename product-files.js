@@ -1,1 +1,1 @@
-window.SAI_FANCY_FILES = [];
+window.SAI_FANCY_FILES = ["images/gold/ear-001.jpg", "images/gold/ear-002.jpg", "images/gold/ear-003.jpg", "images/gold/ear-004.jpg", "images/gold/ear-005.jpg", "images/gold/ear-007.jpg"];
