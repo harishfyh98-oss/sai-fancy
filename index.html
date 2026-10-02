@@ -342,5 +342,42 @@ function sendSfmOrder(){
 .sf-auto-add{margin:0 12px;width:calc(100% - 24px);border:0;border-radius:999px;padding:11px 14px;background:#000;color:#fff;font-weight:700;cursor:pointer}
 </style>
 
+
+<script>
+(function(){
+  const files=window.SAI_FANCY_FILES||[];
+  const price=30;
+  const sold=p=>/-SOLD\.(jpg|jpeg|png|webp)$/i.test(p);
+  const name=p=>p.split("/").pop().replace(/\.[^.]+$/,"").replace(/-SOLD$/i,"").replace(/[-_]+/g," ");
+  if(!files.length)return;
+  const sec=document.createElement("section");
+  sec.id="sf-stock-products";
+  sec.innerHTML='<div class="sf-stock-title"><h2>SHOP EARRINGS</h2><p>ANY EARRINGS ₹30 / PAIR</p></div><div class="sf-stock-grid"></div>';
+  const grid=sec.querySelector(".sf-stock-grid");
+  files.forEach(path=>{
+    const isSold=sold(path), card=document.createElement("div");
+    card.className="sf-stock-card";
+    card.innerHTML='<div class="sf-stock-img"><img src="'+path+'" alt="'+name(path)+'" loading="lazy">'+(isSold?'<span>SOLD OUT</span>':'')+'</div><b>'+name(path)+'</b><small>₹30 / pair</small><button '+(isSold?'disabled':'')+'>'+(isSold?'SOLD OUT':'ADD TO CART')+'</button>';
+    if(!isSold) card.querySelector("button").onclick=()=>{
+      const p={id:path,name:name(path),category:path.split("/")[1],price:price,src:path};
+      if(typeof window.addToCart==="function") window.addToCart(p);
+      else if(typeof window.addToCartItem==="function") window.addToCartItem(p);
+    };
+    grid.appendChild(card);
+  });
+  document.body.appendChild(sec);
+})();
+</script>
+<style>
+#sf-stock-products{padding:40px 18px;max-width:1200px;margin:auto}.sf-stock-title{text-align:center;margin-bottom:24px}
+.sf-stock-title h2{margin:0}.sf-stock-title p{opacity:.7}
+.sf-stock-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px}
+.sf-stock-card{border:1px solid #ddd;border-radius:18px;overflow:hidden;padding-bottom:14px}
+.sf-stock-img{aspect-ratio:1;position:relative;background:#f7f7f7}.sf-stock-img img{width:100%;height:100%;object-fit:contain}
+.sf-stock-img span{position:absolute;top:12px;left:12px;background:#000;color:#fff;padding:7px 10px;border-radius:20px;font-size:11px;font-weight:800}
+.sf-stock-card b,.sf-stock-card small{display:block;padding:8px 12px 0}.sf-stock-card small{opacity:.7}
+.sf-stock-card button{margin:10px 12px 0;width:calc(100% - 24px);border:0;border-radius:30px;padding:11px;background:#000;color:#fff;font-weight:700}
+.sf-stock-card button:disabled{background:#ddd;color:#555}
+</style>
 </body>
 </html>
